@@ -6,10 +6,6 @@ addElementTo a b = a : b
 addListTo a b | a == [] = b
               | otherwise = (tail a) `addListTo` ((head a) `addElementTo` b)
 
-contains list element | list == [] = False
-                      | head list == element = True
-                      | otherwise = (tail list) `contains` element
-
 getDirectChilds parent list | list == [] = []
                             | currentParent == parent = currentChild `addElementTo` childs
                             | otherwise = childs
@@ -17,18 +13,17 @@ getDirectChilds parent list | list == [] = []
         currentChild = head (tail (head list))
         childs = parent `getDirectChilds` (tail list)
 
-getDirectChildsFromManyParents parents list | parents == [] = []
+getDirectChildsByParents parents list | parents == [] = []
                                             | list == [] = []
-                                            | otherwise = (getDirectChilds (head parents) list) `addListTo` (getDirectChildsFromManyParents (tail parents) list)
+                                            | otherwise = (getDirectChilds (head parents) list) `addListTo` (getDirectChildsByParents (tail parents) list)
 
-getChilds parents list | list == [] = []
+getAllChildsByParents parents list | list == [] = []
                        | parents == [] = []
-                       | otherwise = currentDirectChilds `addListTo` (currentDirectChilds `getChilds` list)
-  where currentDirectChilds = getDirectChildsFromManyParents parents list
+                       | otherwise = currentDirectChilds `addListTo` (currentDirectChilds `getAllChildsByParents` list)
+  where currentDirectChilds = getDirectChildsByParents parents list
 
-main = print (getChilds parent list)
+getAllChilds parent list = getAllChildsByParents [parent] list
+
+main = print (getAllChilds "Petro" list)
   where list = [["Kolya", "Petya"], ["Kolya", "Vasya"], ["Gosha", "Anton"], ["Petro", "Kolya"], ["Petro", "Gosha"], ["Petya", "Masha"], ["Petya", "Dasha"], ["Petya", "Spaik"]]
-        a1 = [1, 2, 3]
-        a2 = [4, 5, 6]
-        parent = ["Anton"]
-        parents = ["Petya", "Petro"]
+        parent = ["Kolya"]
